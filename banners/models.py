@@ -7,67 +7,8 @@ from django.utils.translation import gettext_lazy as _
 from django.core.cache import cache
 from django.utils import timezone
 # Create your models here.
-
-
-class LangLocale(models.Model):
-    class ShortCode(models.TextChoices):
-        AMHARIC = "am", _("Amharic")
-        ENGLISH = "en", _("English")
-        OROMIA = "orm", _("Afaan Oromia")
-        FRENCH = "fr", _("French")
-
-    name = models.CharField(max_length=150)
-    shortcode = models.CharField(max_length=10, unique=True, choices=ShortCode.choices)
-    logo = models.FileField(null=True)
-
-    def __str__(self):
-        return self.name.title()
-
-class Configuration(models.Model):
-    config_name = models.CharField(max_length=100, default="default")
-    updated_at = models.DateTimeField(auto_now=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        verbose_name = "Main Configuration"
-        verbose_name_plural = "Main Confiugrations"
-
-    def get(self, attribute, default=None):
-        return self.__get(self, attribute, default)
-
-    @classmethod
-    def get_global(cls, attribute, default=None):
-        configuration = cls.objects.first()
-
-        return cls.__get(configuration, attribute, default), configuration
-
-    @classmethod
-    def get_attribute(cls, name, default=None):
-        configuration = cls.objects.first()
-
-        return cls.__get(configuration, name, default)
-
-    @staticmethod
-    def __get(configuration, attribute, default):
-        if not configuration:
-            return default
-
-        if hasattr(configuration, attribute) and (
-            getattr(configuration, attribute) is not None
-        ):
-            return getattr(configuration, attribute)
-
-        return default
-    @classmethod
-    def start(cls):
-        return cls.objects.first() or cls()
-
 class FrontPageImageConfiguration(models.Model):
     class ImageLocation(models.IntegerChoices):
-        MAIN_BANNER = 1, _("Main Banner")
-        SIDE_BANNER = 2, _("Side Banner")
-        CASINO_BANNER = 3, _("Casino Banner")
-        POPUP_BANNER = 4, _("Popup Banner")
         LOGIN_BANNER = 5, _("Login Banner")
         SIGNUP_BANNER = 6, _("Sign-Up Banner")
         DEPOSIT_BANNER = 7, _("Deposit Banner")
